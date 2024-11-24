@@ -1,36 +1,34 @@
-function todoReducer(state, action) {
-  if (action.type === "add_todo") {
-    let todoText = action.payload.todoText;
-    return [
-      ...state,
-      { id: state.length + 1, todoData: todoText, finished: false },
-    ];
-  } else if (action.type === "edit_todo") {
-    let todo = action.payload.todo;
-    let todoText = action.payload.todoText;
+function todoReducer(state = [], action) {
+  switch (action.type) {
+    case "add_todo": {
+      let todoText = action.payload.todoText;
+      return [
+        ...state,
+        { id: new Date().getTime(), todoData: todoText, finished: false },
+      ];
+    }
 
-    const updatedList = state.map((t) => {
-      if (t.id === todo.id) {
-        todo.todoData = todoText;
-      }
-      return t;
-    });
-    return updatedList;
-  } else if (action.type === "delete_todo") {
-    let todo = action.payload.todo;
-    const updatedList = state.filter((t) => t.id !== todo.id);
-    return updatedList;
-  } else if (action.type === "finish_todo") {
-    let todo = action.payload.todo;
-    let isFinished = action.payload.isFinished;
-    const updatedList = todo.map((t) => {
-      if (t.id === todo.id) {
-        todo.finished = isFinished;
-      }
-      return t;
-    });
+    case "edit_todo": {
+      let { todo, todoText } = action.payload;
+      return state.map((t) =>
+        t.id === todo.id ? { ...t, todoData: todoText } : t,
+      );
+    }
 
-    return updatedList;
+    case "delete_todo": {
+      let { todo } = action.payload;
+      return state.filter((t) => t.id !== todo.id);
+    }
+
+    case "finish_todo": {
+      let { todo, isFinished } = action.payload;
+      return state.map((t) =>
+        t.id === todo.id ? { ...t, finished: isFinished } : t,
+      );
+    }
+
+    default:
+      return state;
   }
 }
 
